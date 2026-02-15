@@ -8,7 +8,7 @@ A CLI tool that reduces cognitive load when navigating between development proje
 go install github.com/dsaiztc/dev@latest
 ```
 
-Then add the shell wrapper to your `~/.zshrc` or `~/.bashrc`:
+Then add to your `~/.zshrc` or `~/.bashrc`:
 
 ```bash
 eval "$(dev init)"

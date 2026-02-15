@@ -47,11 +47,15 @@ func TestDiscover(t *testing.T) {
 	}
 }
 
-func TestDiscover_TooDeep(t *testing.T) {
+func TestDiscover_WrongDepth(t *testing.T) {
 	base := t.TempDir()
 
-	// Create a repo at depth 6 (should not be found, maxDepth=4)
-	deep := filepath.Join(base, "a", "b", "c", "d", "e", "f")
+	// Repo at depth 2 (source/project) — should not be found
+	shallow := filepath.Join(base, "github.com", "solo-project")
+	os.MkdirAll(filepath.Join(shallow, ".git"), 0o755)
+
+	// Repo at depth 4 (source/org/sub/project) — should not be found
+	deep := filepath.Join(base, "gitlab.com", "org", "sub", "project")
 	os.MkdirAll(filepath.Join(deep, ".git"), 0o755)
 
 	repos, err := Discover(base)
@@ -60,7 +64,28 @@ func TestDiscover_TooDeep(t *testing.T) {
 	}
 
 	if len(repos) != 0 {
-		t.Errorf("expected no repos at depth > %d, got %v", maxDepth, repos)
+		t.Errorf("expected no repos at wrong depth, got %v", repos)
+	}
+}
+
+func TestDiscover_IgnoresParentGit(t *testing.T) {
+	base := t.TempDir()
+
+	// Org directory has .git (should be ignored, not at depth 3)
+	orgDir := filepath.Join(base, "github.com", "dsaiztc")
+	os.MkdirAll(filepath.Join(orgDir, ".git"), 0o755)
+
+	// Repos inside should still be found
+	repo := filepath.Join(orgDir, "dev")
+	os.MkdirAll(filepath.Join(repo, ".git"), 0o755)
+
+	repos, err := Discover(base)
+	if err != nil {
+		t.Fatalf("Discover() error: %v", err)
+	}
+
+	if len(repos) != 1 || repos[0] != "github.com/dsaiztc/dev" {
+		t.Errorf("Discover() = %v, want [github.com/dsaiztc/dev]", repos)
 	}
 }
 

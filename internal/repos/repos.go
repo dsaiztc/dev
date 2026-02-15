@@ -8,14 +8,15 @@ import (
 	"github.com/sahilm/fuzzy"
 )
 
-const maxDepth = 4
+// repoDepth is the expected depth of repos under baseDir: source/org/project.
+const repoDepth = 3
 
-// Discover walks baseDir up to maxDepth levels deep and returns relative paths
-// of directories containing a .git directory. It stops descending into repos.
+// Discover finds all repos at exactly depth 3 (source/org/project) under
+// baseDir that contain a .git directory.
 func Discover(baseDir string) ([]string, error) {
 	var repos []string
 
-	err := walkDepth(baseDir, baseDir, 0, &repos)
+	err := walkToDepth(baseDir, baseDir, 0, &repos)
 	if err != nil {
 		return nil, err
 	}
@@ -24,11 +25,7 @@ func Discover(baseDir string) ([]string, error) {
 	return repos, nil
 }
 
-func walkDepth(baseDir, currentDir string, depth int, repos *[]string) error {
-	if depth > maxDepth {
-		return nil
-	}
-
+func walkToDepth(baseDir, currentDir string, depth int, repos *[]string) error {
 	entries, err := os.ReadDir(currentDir)
 	if err != nil {
 		return nil
@@ -41,21 +38,19 @@ func walkDepth(baseDir, currentDir string, depth int, repos *[]string) error {
 
 		fullPath := filepath.Join(currentDir, entry.Name())
 
-		// Check if this dir contains .git
-		gitDir := filepath.Join(fullPath, ".git")
-		if _, err := os.Stat(gitDir); err == nil {
-			relPath, err := filepath.Rel(baseDir, fullPath)
-			if err != nil {
-				continue
+		if depth+1 == repoDepth {
+			// At target depth — check for .git
+			gitDir := filepath.Join(fullPath, ".git")
+			if _, err := os.Stat(gitDir); err == nil {
+				relPath, err := filepath.Rel(baseDir, fullPath)
+				if err != nil {
+					continue
+				}
+				*repos = append(*repos, relPath)
 			}
-			*repos = append(*repos, relPath)
-			// Don't descend into repos
-			continue
-		}
-
-		// Recurse deeper
-		if err := walkDepth(baseDir, fullPath, depth+1, repos); err != nil {
-			continue
+		} else {
+			// Not deep enough yet — keep descending
+			walkToDepth(baseDir, fullPath, depth+1, repos)
 		}
 	}
 
