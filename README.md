@@ -4,6 +4,15 @@ A CLI tool that reduces cognitive load when navigating between development proje
 
 ## Install
 
+### Homebrew
+
+```bash
+brew tap dsaiztc/tap
+brew install dev
+```
+
+### From source
+
 ```bash
 go install github.com/dsaiztc/dev@latest
 ```
@@ -39,6 +48,21 @@ dev cd              # opens interactive fuzzy finder
 ### `dev init`
 
 Prints the shell wrapper function. The wrapper intercepts `cd` and `clone` to eval their stdout, enabling actual directory changes in the parent shell.
+
+## Releasing
+
+Releases are automated with [GoReleaser](https://goreleaser.com/) and GitHub Actions. Pushing a tag triggers a build that cross-compiles binaries, creates a GitHub Release, and updates the Homebrew formula.
+
+```bash
+git tag v0.2.0
+git push origin v0.2.0
+```
+
+### Setup (one-time)
+
+1. Create a `dsaiztc/homebrew-tap` repo on GitHub
+2. Create a fine-grained Personal Access Token with Contents read/write access to `homebrew-tap`
+3. Add the token as a repository secret named `HOMEBREW_TAP_TOKEN` in `dsaiztc/dev`
 
 ## Directory Structure
 
