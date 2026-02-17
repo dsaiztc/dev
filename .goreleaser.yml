@@ -1,0 +1,26 @@
+project_name: dev
+
+builds:
+  - main: .
+    binary: dev
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{.Version}}
+
+archives:
+  - format: tar.gz
+
+brews:
+  - repository:
+      owner: dsaiztc
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
+    homepage: https://github.com/dsaiztc/dev
+    description: "A CLI tool for managing development projects"
+    install: |
+      bin.install "dev"
