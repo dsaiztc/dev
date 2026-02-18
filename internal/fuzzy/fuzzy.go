@@ -13,10 +13,13 @@ import (
 
 const maxVisible = 10
 
+// Renderer tied to stderr so colors work when stdout is captured by the shell wrapper.
+var renderer = lipgloss.NewRenderer(os.Stderr)
+
 var (
-	selectedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("212")).Bold(true)
-	normalStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("252"))
-	promptStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("39"))
+	selectedStyle = renderer.NewStyle().Foreground(lipgloss.Color("212")).Bold(true)
+	normalStyle   = renderer.NewStyle().Foreground(lipgloss.Color("252"))
+	promptStyle   = renderer.NewStyle().Foreground(lipgloss.Color("39"))
 )
 
 type model struct {
@@ -134,10 +137,18 @@ func Run(items []string) (string, error) {
 
 	m := newModel(items)
 
+	// Open /dev/tty directly for input so the TUI works
+	// even when stdout is captured by the shell wrapper's $()
+	tty, err := os.Open("/dev/tty")
+	if err != nil {
+		return "", fmt.Errorf("could not open /dev/tty: %w", err)
+	}
+	defer tty.Close()
+
 	// Render on stderr so stdout remains clean for shell eval
 	p := tea.NewProgram(m,
 		tea.WithOutput(os.Stderr),
-		tea.WithInput(os.Stdin),
+		tea.WithInput(tty),
 	)
 
 	finalModel, err := p.Run()
