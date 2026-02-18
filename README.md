@@ -17,7 +17,27 @@ brew install dev
 go install github.com/dsaiztc/dev@latest
 ```
 
-Then add to your `~/.zshrc` or `~/.bashrc`:
+### For development
+
+See [Development](#development).
+
+## Upgrade
+
+### Homebrew
+
+```bash
+brew upgrade dev
+```
+
+### From source
+
+```bash
+go install github.com/dsaiztc/dev@latest
+```
+
+## Setup
+
+Add to your `~/.zshrc` or `~/.bashrc`:
 
 ```bash
 eval "$(dev init)"
@@ -48,6 +68,53 @@ dev cd              # opens interactive fuzzy finder
 ### `dev init`
 
 Prints the shell wrapper function. The wrapper intercepts `cd` and `clone` to eval their stdout, enabling actual directory changes in the parent shell.
+
+## Development
+
+### Prerequisites
+
+- [Go](https://go.dev/dl/) 1.25+
+
+### Setup
+
+Clone the repo into the expected directory structure and install dependencies:
+
+```bash
+git clone git@github.com:dsaiztc/dev.git ~/src/github.com/dsaiztc/dev
+cd ~/src/github.com/dsaiztc/dev
+go mod download
+```
+
+### Running tests
+
+```bash
+go test ./...
+```
+
+### Build and run
+
+Install the binary from local source to `$GOPATH/bin`:
+
+```bash
+go install .
+```
+
+After that, `dev` in your shell reflects the local code. Re-run `go install .` after each change to rebuild.
+
+To run a command without installing:
+
+```bash
+go run . <command> [args]   # e.g. go run . clone git@github.com:foo/bar.git
+```
+
+Note: commands that depend on the shell wrapper (`dev cd`, `dev clone`) need the full installed binary to work correctly via `eval "$(dev init)"`.
+
+### Contributing
+
+1. Fork the repo and create a branch
+2. Make changes and add tests where appropriate
+3. Run `go test ./...` to verify everything passes
+4. Open a pull request
 
 ## Releasing
 
