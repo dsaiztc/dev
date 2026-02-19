@@ -14,7 +14,3 @@ When cutting a new release:
    ```
    gh release edit vX.Y.Z --notes "..."
    ```
-
-## Project page
-
-The GitHub Pages site is served from the `docs/` directory. Update `docs/index.html` when adding new features or making significant changes to keep the landing page current.
