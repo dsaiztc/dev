@@ -56,6 +56,20 @@ dev clone git@github.com:dsaiztc/dotfiles.git
 
 Supports SSH, HTTPS, and `ssh://` URLs. If the repo is already cloned, it prints the path and exits.
 
+### `dev new <name>`
+
+Creates a new project directory under `~/src/<source>/<org>/<name>` and cd's into it.
+
+```bash
+dev new cool-idea   # → creates ~/src/github.com/dsaiztc/cool-idea and cd's into it
+```
+
+On first use, prompts for default source and org, saving them to `~/.config/dev/config.json`. Override defaults per-invocation with `--source` and `--org`:
+
+```bash
+dev new --source gitlab.com --org myteam special
+```
+
 ### `dev cd [query]`
 
 Navigates to a project directory.
@@ -67,7 +81,7 @@ dev cd              # opens interactive fuzzy finder
 
 ### `dev init`
 
-Prints the shell wrapper function. The wrapper intercepts `cd` and `clone` to eval their stdout, enabling actual directory changes in the parent shell.
+Prints the shell wrapper function. The wrapper intercepts `cd`, `clone`, and `new` to eval their stdout, enabling actual directory changes in the parent shell.
 
 ## Development
 
