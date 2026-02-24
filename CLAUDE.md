@@ -14,3 +14,16 @@ When cutting a new release:
    ```
    gh release edit vX.Y.Z --notes "..."
    ```
+
+## Release notes format
+
+Follow [Keep a Changelog](https://keepachangelog.com/) conventions. Start with a one-line summary, then use `###` sections as applicable:
+
+- **Added** — new features
+- **Changed** — changes to existing functionality
+- **Deprecated** — features that will be removed
+- **Removed** — features that were removed
+- **Fixed** — bug fixes
+- **Security** — vulnerability fixes
+
+Only include sections that apply to the release.
