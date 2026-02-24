@@ -130,6 +130,37 @@ Note: commands that depend on the shell wrapper (`dev cd`, `dev clone`) need the
 3. Run `go test ./...` to verify everything passes
 4. Open a pull request
 
+## Architecture
+
+### Project layout
+
+| Directory | Purpose |
+|---|---|
+| `cmd/` | Cobra command implementations (one file per command) |
+| `internal/config/` | Config loading/saving (`~/.config/dev/config.json`) |
+| `internal/fuzzy/` | Bubbletea interactive fuzzy finder TUI |
+| `internal/repos/` | Repository discovery and fuzzy matching |
+| `internal/repourl/` | Git URL parsing (SSH, HTTPS, `ssh://`) |
+| `internal/shell/` | Shell wrapper function generation |
+
+### Libraries
+
+- [Cobra](https://github.com/spf13/cobra) — CLI framework
+- [Bubbletea](https://github.com/charmbracelet/bubbletea) / [Bubbles](https://github.com/charmbracelet/bubbles) / [Lipgloss](https://github.com/charmbracelet/lipgloss) — TUI and terminal styling
+- [sahilm/fuzzy](https://github.com/sahilm/fuzzy) — fuzzy string matching
+
+### How the shell wrapper works
+
+Commands that need to affect the parent shell (`cd`, `clone`, `new`) print shell commands to **stdout**. The wrapper function installed via `eval "$(dev init)"` captures and evals that output. All user-facing messages go to **stderr** to keep stdout clean for eval.
+
+### CI/CD
+
+A GitHub Actions workflow (`.github/workflows/release.yml`) triggers on every `v*` tag push. It runs [GoReleaser](https://goreleaser.com/) (`.goreleaser.yml`), which cross-compiles binaries for macOS and Linux (amd64 + arm64), creates a GitHub Release with `tar.gz` archives, and pushes an updated Homebrew formula to [`dsaiztc/homebrew-tap`](https://github.com/dsaiztc/homebrew-tap). The version is injected at build time via `-ldflags`.
+
+### `/dev/tty`
+
+Interactive commands (fuzzy finder, config prompts) can't read from stdin because it's captured by the `$()` subshell. They open `/dev/tty` directly instead.
+
 ## Releasing
 
 Releases are automated with [GoReleaser](https://goreleaser.com/) and GitHub Actions. Pushing a tag triggers a build that cross-compiles binaries, creates a GitHub Release, and updates the Homebrew formula.
