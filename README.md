@@ -79,6 +79,26 @@ dev cd kafka        # fuzzy matches → cd ~/src/github.com/apache/kafka
 dev cd              # opens interactive fuzzy finder
 ```
 
+### `dev tree`
+
+Displays a tree view of all repositories under `~/src/`.
+
+```bash
+dev tree
+# → ~/src/
+#   ├── github.com
+#   │   ├── dsaiztc
+#   │   │   ├── dev
+#   │   │   └── dotfiles
+#   │   └── apache
+#   │       └── kafka
+#   └── gitlab.com
+#       └── team
+#           └── service
+```
+
+Useful for getting an overview of your repository organization at a glance.
+
 ### `dev init`
 
 Prints the shell wrapper function. The wrapper intercepts `cd`, `clone`, and `new` to eval their stdout, enabling actual directory changes in the parent shell.
