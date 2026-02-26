@@ -79,6 +79,17 @@ dev cd kafka        # fuzzy matches → cd ~/src/github.com/apache/kafka
 dev cd              # opens interactive fuzzy finder
 ```
 
+### `dev loc [query]`
+
+Prints the full path to a repository to stdout. Useful for composing with other commands.
+
+```bash
+dev loc dotfiles           # → /Users/dsaiztc/src/github.com/dsaiztc/dotfiles
+code $(dev loc project)    # open repo in VS Code
+ls -la $(dev loc dev)      # list files in repo
+dev loc | pbcopy           # interactive mode, copy path to clipboard
+```
+
 ### `dev tree`
 
 Displays a tree view of all repositories under `~/src/`.
