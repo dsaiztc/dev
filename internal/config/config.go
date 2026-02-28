@@ -11,6 +11,16 @@ import (
 type Config struct {
 	DefaultSource string `json:"default_source"`
 	DefaultOrg    string `json:"default_org"`
+	WorktreeRoot  string `json:"worktree_root,omitempty"`
+}
+
+// GetWorktreeRoot returns the configured worktree root or the default ~/src__worktrees.
+func (c *Config) GetWorktreeRoot() string {
+	if c.WorktreeRoot != "" {
+		return c.WorktreeRoot
+	}
+	homeDir, _ := os.UserHomeDir()
+	return filepath.Join(homeDir, "src__worktrees")
 }
 
 // Path returns the config file path (~/.config/dev/config.json).
