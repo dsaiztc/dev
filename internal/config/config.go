@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // Config holds user defaults for the dev CLI.
@@ -15,11 +16,15 @@ type Config struct {
 }
 
 // GetWorktreeRoot returns the configured worktree root or the default ~/src__worktrees.
+// Expands a leading ~ to the user's home directory.
 func (c *Config) GetWorktreeRoot() string {
+	homeDir, _ := os.UserHomeDir()
 	if c.WorktreeRoot != "" {
+		if strings.HasPrefix(c.WorktreeRoot, "~/") {
+			return filepath.Join(homeDir, c.WorktreeRoot[2:])
+		}
 		return c.WorktreeRoot
 	}
-	homeDir, _ := os.UserHomeDir()
 	return filepath.Join(homeDir, "src__worktrees")
 }
 

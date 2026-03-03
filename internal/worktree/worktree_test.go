@@ -33,7 +33,7 @@ func TestFormatWorktreePath(t *testing.T) {
 			org:    "dsaiztc",
 			repo:   "dev",
 			branch: "fix/bug-123",
-			want:   "/home/user/src__worktrees/github.com/dsaiztc/dev__fix-bug-123",
+			want:   "/home/user/src__worktrees/github.com/dsaiztc/dev__fix--bug-123",
 		},
 		{
 			name:   "different source",
