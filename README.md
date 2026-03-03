@@ -110,9 +110,53 @@ dev tree
 
 Useful for getting an overview of your repository organization at a glance.
 
+### `dev wkt new <branch>`
+
+Creates a new git worktree with a new branch and cd's into it. Worktrees are stored under `~/src__worktrees/<source>/<org>/<repo>__<branch>`, separate from `~/src/` so `dev cd` is unaffected.
+
+```bash
+dev wkt new feature-login
+# → creates worktree at ~/src__worktrees/github.com/dsaiztc/dev__feature-login
+
+dev wkt new fix/bug-123
+# → creates worktree at ~/src__worktrees/github.com/dsaiztc/dev__fix--bug-123
+```
+
+Branch name slashes are replaced with `--` in the directory name to keep paths flat.
+
+### `dev wkt cd`
+
+Opens a fuzzy finder to navigate between worktrees of the current repository.
+
+```bash
+dev wkt cd    # fuzzy finder with branch names, main worktree annotated with (main)
+```
+
+### `dev wkt rm [branch]`
+
+Removes a worktree, its local branch, and its remote branch (best-effort).
+
+```bash
+dev wkt rm              # from a linked worktree: removes the current one, cd's to main
+dev wkt rm feature-x    # from the main worktree: removes the named worktree
+dev wkt rm              # from the main worktree: opens fuzzy finder to pick one
+```
+
+Always prompts for confirmation. The main worktree is protected and cannot be removed.
+
+### `dev wkt` configuration
+
+The worktree root directory defaults to `~/src__worktrees/` and can be customized in `~/.config/dev/config.json`:
+
+```json
+{
+  "worktree_root": "~/my_worktrees"
+}
+```
+
 ### `dev init`
 
-Prints the shell wrapper function. The wrapper intercepts `cd`, `clone`, and `new` to eval their stdout, enabling actual directory changes in the parent shell.
+Prints the shell wrapper function. The wrapper intercepts `cd`, `clone`, `new`, and `wkt` subcommands to eval their stdout, enabling actual directory changes in the parent shell.
 
 ## Development
 
@@ -173,6 +217,7 @@ Note: commands that depend on the shell wrapper (`dev cd`, `dev clone`) need the
 | `internal/repos/` | Repository discovery and fuzzy matching |
 | `internal/repourl/` | Git URL parsing (SSH, HTTPS, `ssh://`) |
 | `internal/shell/` | Shell wrapper function generation |
+| `internal/worktree/` | Git worktree detection, creation, and removal |
 
 ### Libraries
 
