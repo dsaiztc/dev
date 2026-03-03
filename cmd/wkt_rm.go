@@ -14,7 +14,13 @@ import (
 var wktRmCmd = &cobra.Command{
 	Use:   "rm [branch]",
 	Short: "Remove a worktree and its branch",
-	Long:  `From a linked worktree: removes the current worktree. From the main worktree: removes the specified or selected worktree.`,
+	Long: `Remove a worktree, its local branch, and its remote branch.
+
+From a linked worktree (no args): removes the current worktree.
+From the main worktree: specify a branch name or pick one from the fuzzy finder.
+
+This command deletes the worktree directory, the local branch (git branch -D),
+and the remote branch (git push origin --delete). Always prompts for confirmation.`,
 	Args:  cobra.MaximumNArgs(1),
 	RunE:  runWktRm,
 }

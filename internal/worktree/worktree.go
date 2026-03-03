@@ -264,6 +264,8 @@ func GetWorktreeRoot() (string, error) {
 }
 
 // FormatWorktreePath constructs the worktree directory path.
+// Slashes in branch names are replaced with dashes to keep paths flat.
 func FormatWorktreePath(root, source, org, repo, branch string) string {
-	return filepath.Join(root, source, org, repo+"__"+branch)
+	safeBranch := strings.ReplaceAll(branch, "/", "-")
+	return filepath.Join(root, source, org, repo+"__"+safeBranch)
 }
