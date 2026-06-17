@@ -20,6 +20,11 @@ var rootCmd = &cobra.Command{
 
 const pluginGroupID = "plugins"
 
+// SetVersion sets the version string reported by --version.
+func SetVersion(v string) {
+	rootCmd.Version = v
+}
+
 func init() {
 	rootCmd.PersistentFlags().Bool("no-input", false, "disable all interactive prompts (for use in scripts/agents)")
 }
