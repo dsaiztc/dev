@@ -70,6 +70,12 @@ On first use, prompts for default source and org, saving them to `~/.config/dev/
 dev new --source gitlab.com --org myteam special
 ```
 
+Pass `--no-input` to skip the prompt and use defaults (useful in scripts or AI agents):
+
+```bash
+dev new cool-idea --no-input
+```
+
 ### `dev cd [query]`
 
 Navigates to a project directory.
@@ -88,6 +94,7 @@ dev loc dotfiles           # → /Users/dsaiztc/src/github.com/dsaiztc/dotfiles
 code $(dev loc project)    # open repo in VS Code
 ls -la $(dev loc dev)      # list files in repo
 dev loc | pbcopy           # interactive mode, copy path to clipboard
+dev loc dotfiles --json    # → {"repo":"github.com/dsaiztc/dotfiles","path":"/Users/..."}
 ```
 
 ### `dev tree`
@@ -108,7 +115,11 @@ dev tree
 #           └── service
 ```
 
-Useful for getting an overview of your repository organization at a glance.
+Useful for getting an overview of your repository organization at a glance. Pass `--json` to get a machine-readable array of repo paths:
+
+```bash
+dev tree --json | jq 'length'   # count repos
+```
 
 ### `dev wt`
 
@@ -147,9 +158,10 @@ Removes a worktree, its local branch, and its remote branch (best-effort).
 dev wt rm              # from a linked worktree: removes the current one, cd's to main
 dev wt rm feature-x    # from the main worktree: removes the named worktree
 dev wt rm              # from the main worktree: opens fuzzy finder to pick one
+dev wt rm feature-x -y  # skip confirmation prompt (for scripts/agents)
 ```
 
-Always prompts for confirmation. The main worktree is protected and cannot be removed.
+Prompts for confirmation unless `--yes` / `-y` (or `--force`) is passed. When no TTY is available and `--yes` is absent, the command errors rather than silently cancelling. The main worktree is protected and cannot be removed.
 
 ### `dev wt` configuration
 
@@ -234,7 +246,7 @@ Note: commands that depend on the shell wrapper (`dev cd`, `dev clone`) need the
 
 ### How the shell wrapper works
 
-Commands that need to affect the parent shell (`cd`, `clone`, `new`) print shell commands to **stdout**. The wrapper function installed via `eval "$(dev init)"` captures and evals that output. All user-facing messages go to **stderr** to keep stdout clean for eval.
+Commands that need to affect the parent shell (`cd`, `clone`, `new`, `wt`) print shell commands to **stdout**. The wrapper function installed via `eval "$(dev init)"` captures and evals that output. All user-facing messages go to **stderr** to keep stdout clean for eval. Help and version flags (`--help`, `-h`, `--version`) bypass the eval path entirely.
 
 ### CI/CD
 
@@ -242,7 +254,7 @@ A GitHub Actions workflow (`.github/workflows/release.yml`) triggers on every `v
 
 ### `/dev/tty`
 
-Interactive commands (fuzzy finder, config prompts) can't read from stdin because it's captured by the `$()` subshell. They open `/dev/tty` directly instead.
+Interactive commands (fuzzy finder, config prompts) can't read from stdin because it's captured by the `$()` subshell. They open `/dev/tty` directly instead. Use `--no-input` to disable all prompts, or `--yes` on destructive commands, to run non-interactively when no TTY is available (e.g. in CI or AI agents).
 
 ## Releasing
 
