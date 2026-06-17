@@ -10,9 +10,12 @@ import (
 )
 
 var wtCdCmd = &cobra.Command{
-	Use:   "cd",
+	Use:   "cd [-]",
 	Short: "Navigate to a worktree via fuzzy finder",
-	RunE:  runWtCd,
+	Long: `Opens a fuzzy finder to navigate between worktrees of the current repository.
+
+Use "-" to return to the previous directory (like "cd -").`,
+	RunE: runWtCd,
 }
 
 func init() {
@@ -20,6 +23,12 @@ func init() {
 }
 
 func runWtCd(cmd *cobra.Command, args []string) error {
+	// "dev wt cd -" returns to the previous directory, mirroring shell "cd -".
+	if len(args) == 1 && args[0] == "-" {
+		fmt.Println("cd -")
+		return nil
+	}
+
 	repoInfo, err := worktree.DetectCurrentRepo()
 	if err != nil {
 		return err

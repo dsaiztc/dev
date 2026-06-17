@@ -14,8 +14,10 @@ import (
 var cdCmd = &cobra.Command{
 	Use:   "cd [query]",
 	Short: "Navigate to a project directory",
-	Long:  `Without arguments, opens an interactive fuzzy finder. With a query, jumps to the best matching repo.`,
-	RunE:  runCD,
+	Long: `Without arguments, opens an interactive fuzzy finder. With a query, jumps to the best matching repo.
+
+Use "-" to return to the previous directory (like "cd -").`,
+	RunE: runCD,
 }
 
 func init() {
@@ -23,6 +25,13 @@ func init() {
 }
 
 func runCD(cmd *cobra.Command, args []string) error {
+	// "dev cd -" returns to the previous directory, mirroring shell "cd -".
+	// $OLDPWD is maintained by the shell as the wrapper evals our cd output.
+	if len(args) == 1 && args[0] == "-" {
+		fmt.Println("cd -")
+		return nil
+	}
+
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		return fmt.Errorf("could not determine home directory: %w", err)

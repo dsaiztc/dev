@@ -83,6 +83,7 @@ Navigates to a project directory.
 ```bash
 dev cd kafka        # fuzzy matches → cd ~/src/github.com/apache/kafka
 dev cd              # opens interactive fuzzy finder
+dev cd -            # returns to the previous directory (like `cd -`)
 ```
 
 ### `dev loc [query]`
@@ -148,6 +149,7 @@ Opens a fuzzy finder to navigate between worktrees of the current repository.
 ```bash
 dev wt cd    # fuzzy finder with branch names, main worktree annotated with (main)
 dev wt       # same thing — cd is the default subcommand
+dev wt cd -  # returns to the previous directory (like `cd -`)
 ```
 
 ### `dev wt rm [branch]`
