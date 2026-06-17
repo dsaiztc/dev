@@ -37,7 +37,7 @@ func init() {
 func runWtRm(cmd *cobra.Command, args []string) error {
 	yes, _ := cmd.Flags().GetBool("yes")
 	force, _ := cmd.Flags().GetBool("force")
-	skipPrompt := yes || force
+	skipPrompt := yes || force || noInput(cmd)
 
 	repoInfo, err := worktree.DetectCurrentRepo()
 	if err != nil {

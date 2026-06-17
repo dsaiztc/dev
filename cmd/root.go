@@ -20,6 +20,16 @@ var rootCmd = &cobra.Command{
 
 const pluginGroupID = "plugins"
 
+func init() {
+	rootCmd.PersistentFlags().Bool("no-input", false, "disable all interactive prompts (for use in scripts/agents)")
+}
+
+// noInput returns true when --no-input was passed or when /dev/tty is unavailable.
+func noInput(cmd *cobra.Command) bool {
+	v, _ := cmd.Root().PersistentFlags().GetBool("no-input")
+	return v
+}
+
 func Execute() {
 	registerPlugins()
 
