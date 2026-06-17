@@ -179,6 +179,17 @@ The worktree root directory defaults to `~/src__worktrees/` and can be customize
 
 Prints the shell wrapper function. The wrapper intercepts `cd`, `clone`, `new`, and `wt` (and the deprecated `wkt`) subcommands to eval their stdout, enabling actual directory changes in the parent shell.
 
+### Global flags
+
+These flags are available on every command (designed to keep `dev` scriptable and agent-friendly):
+
+| Flag | Description |
+|---|---|
+| `--version` | Print the version and exit. |
+| `--no-input` | Disable all interactive prompts. Commands fall back to defaults or error instead of blocking — useful in scripts, CI, and AI agents. |
+| `--no-color` | Disable ANSI color output. Also honored via the `NO_COLOR` environment variable. |
+| `-h`, `--help` | Show help for any command. |
+
 ## Development
 
 ### Prerequisites
