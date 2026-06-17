@@ -2,8 +2,8 @@
 description: >
   Read this when cutting a release of the dev CLI — whenever the user says
   "cut a release", "ship it", "tag a version", or asks to update release
-  notes. Covers the full release checklist, semver choice, and the
-  requirement to keep the README in sync with the released version.
+  notes. Covers the full release checklist, semver choice, and keeping docs
+  in sync — both the README and the public site (dsaiztc.github.io/dev).
 read_when: cutting a release, tagging vX.Y.Z, editing release notes, bumping the version
 ---
 
@@ -38,6 +38,31 @@ creates a GitHub Release, and updates the Homebrew tap.
    ```bash
    gh release edit vX.Y.Z --notes "..."
    ```
+8. **Update the public site** if the release adds or changes user-facing
+   functionality (new command, flag, or behavior). See "Public site" below.
+
+## Public site
+
+The public-facing docs live in a separate repo:
+
+```
+~/src/github.com/dsaiztc/dsaiztc.github.io/dev/index.html
+```
+
+It's a single Tailwind static page (no build step). When a release changes
+user-facing behavior, update it to match:
+
+- Add new commands/flags to the relevant section, or add a new `<section>`.
+- Follow the existing convention for marking versions: a violet span,
+  e.g. `<span class="text-violet-600 font-semibold">New in vX.Y.0.</span>`
+  (or an inline `(vX.Y.0)` for smaller additions).
+- Keep command names current (e.g. the worktree subcommand is `wt`, with
+  `wkt` only mentioned as the deprecated alias).
+- Verify the HTML stays well-formed (balanced tags) before committing.
+- Also update the project description in that repo's `llms.txt` (the
+  `### Projects` → `dev` entry) if the one-line summary changed; leave blog-post
+  titles/descriptions there alone (they're historical).
+- Commit and push that repo separately — it deploys via GitHub Pages.
 
 ## Release notes format
 
