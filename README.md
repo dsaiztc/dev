@@ -110,41 +110,48 @@ dev tree
 
 Useful for getting an overview of your repository organization at a glance.
 
-### `dev wkt new <branch>`
+### `dev wt`
+
+Manages git worktrees. Run without a subcommand to navigate to a worktree via the fuzzy finder (equivalent to `dev wt cd`).
+
+> **Note:** `wkt` is a deprecated alias for `wt`. It still works but prints a deprecation warning to stderr and will be removed in a future release.
+
+### `dev wt new <branch>`
 
 Creates a new git worktree with a new branch and cd's into it. Worktrees are stored under `~/src__worktrees/<source>/<org>/<repo>__<branch>`, separate from `~/src/` so `dev cd` is unaffected.
 
 ```bash
-dev wkt new feature-login
+dev wt new feature-login
 # → creates worktree at ~/src__worktrees/github.com/dsaiztc/dev__feature-login
 
-dev wkt new fix/bug-123
+dev wt new fix/bug-123
 # → creates worktree at ~/src__worktrees/github.com/dsaiztc/dev__fix--bug-123
 ```
 
 Branch name slashes are replaced with `--` in the directory name to keep paths flat.
 
-### `dev wkt cd`
+### `dev wt cd`
 
 Opens a fuzzy finder to navigate between worktrees of the current repository.
 
 ```bash
-dev wkt cd    # fuzzy finder with branch names, main worktree annotated with (main)
+dev wt cd    # fuzzy finder with branch names, main worktree annotated with (main)
+dev wt       # same thing — cd is the default subcommand
 ```
 
-### `dev wkt rm [branch]`
+### `dev wt rm [branch]`
 
 Removes a worktree, its local branch, and its remote branch (best-effort).
 
 ```bash
-dev wkt rm              # from a linked worktree: removes the current one, cd's to main
-dev wkt rm feature-x    # from the main worktree: removes the named worktree
-dev wkt rm              # from the main worktree: opens fuzzy finder to pick one
+dev wt rm              # from a linked worktree: removes the current one, cd's to main
+dev wt rm feature-x    # from the main worktree: removes the named worktree
+dev wt rm              # from the main worktree: opens fuzzy finder to pick one
 ```
 
 Always prompts for confirmation. The main worktree is protected and cannot be removed.
 
-### `dev wkt` configuration
+### `dev wt` configuration
 
 The worktree root directory defaults to `~/src__worktrees/` and can be customized in `~/.config/dev/config.json`:
 
@@ -156,7 +163,7 @@ The worktree root directory defaults to `~/src__worktrees/` and can be customize
 
 ### `dev init`
 
-Prints the shell wrapper function. The wrapper intercepts `cd`, `clone`, `new`, and `wkt` subcommands to eval their stdout, enabling actual directory changes in the parent shell.
+Prints the shell wrapper function. The wrapper intercepts `cd`, `clone`, `new`, and `wt` (and the deprecated `wkt`) subcommands to eval their stdout, enabling actual directory changes in the parent shell.
 
 ## Development
 

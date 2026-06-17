@@ -8,18 +8,18 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var wktNewCmd = &cobra.Command{
+var wtNewCmd = &cobra.Command{
 	Use:   "new <branch>",
 	Short: "Create a new worktree with a new branch",
 	Args:  cobra.ExactArgs(1),
-	RunE:  runWktNew,
+	RunE:  runWtNew,
 }
 
 func init() {
-	wktCmd.AddCommand(wktNewCmd)
+	wtCmd.AddCommand(wtNewCmd)
 }
 
-func runWktNew(cmd *cobra.Command, args []string) error {
+func runWtNew(cmd *cobra.Command, args []string) error {
 	branchName := args[0]
 
 	repoInfo, err := worktree.DetectCurrentRepo()

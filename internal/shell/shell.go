@@ -5,7 +5,7 @@ package shell
 // affect the parent shell (e.g., change directory).
 func WrapperFunc() string {
 	return `dev() {
-  if [[ "$1" == "cd" || "$1" == "clone" || "$1" == "new" || ( "$1" == "wkt" && "$2" =~ ^(cd|new|rm)$ ) ]]; then
+  if [[ "$1" == "cd" || "$1" == "clone" || "$1" == "new" || ( ( "$1" == "wt" || "$1" == "wkt" ) && ( -z "$2" || "$2" =~ ^(cd|new|rm)$ ) ) ]]; then
     local output
     output="$(command dev "$@")"
     local exit_code=$?

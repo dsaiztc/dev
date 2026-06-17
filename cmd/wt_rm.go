@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var wktRmCmd = &cobra.Command{
+var wtRmCmd = &cobra.Command{
 	Use:   "rm [branch]",
 	Short: "Remove a worktree and its branch",
 	Long: `Remove a worktree, its local branch, and its remote branch.
@@ -21,15 +21,15 @@ From the main worktree: specify a branch name or pick one from the fuzzy finder.
 
 This command deletes the worktree directory, the local branch (git branch -D),
 and the remote branch (git push origin --delete). Always prompts for confirmation.`,
-	Args:  cobra.MaximumNArgs(1),
-	RunE:  runWktRm,
+	Args: cobra.MaximumNArgs(1),
+	RunE: runWtRm,
 }
 
 func init() {
-	wktCmd.AddCommand(wktRmCmd)
+	wtCmd.AddCommand(wtRmCmd)
 }
 
-func runWktRm(cmd *cobra.Command, args []string) error {
+func runWtRm(cmd *cobra.Command, args []string) error {
 	repoInfo, err := worktree.DetectCurrentRepo()
 	if err != nil {
 		return err

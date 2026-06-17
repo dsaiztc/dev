@@ -9,17 +9,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var wktCdCmd = &cobra.Command{
+var wtCdCmd = &cobra.Command{
 	Use:   "cd",
 	Short: "Navigate to a worktree via fuzzy finder",
-	RunE:  runWktCd,
+	RunE:  runWtCd,
 }
 
 func init() {
-	wktCmd.AddCommand(wktCdCmd)
+	wtCmd.AddCommand(wtCdCmd)
 }
 
-func runWktCd(cmd *cobra.Command, args []string) error {
+func runWtCd(cmd *cobra.Command, args []string) error {
 	repoInfo, err := worktree.DetectCurrentRepo()
 	if err != nil {
 		return err

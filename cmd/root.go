@@ -3,8 +3,10 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/dsaiztc/dev/internal/plugin"
 	"github.com/spf13/cobra"
@@ -21,6 +23,8 @@ const pluginGroupID = "plugins"
 func Execute() {
 	registerPlugins()
 
+	warnDeprecatedAlias(os.Args[1:], os.Stderr)
+
 	if err := rootCmd.Execute(); err != nil {
 		var exitErr *exec.ExitError
 		if errors.As(err, &exitErr) {
@@ -28,6 +32,22 @@ func Execute() {
 		}
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
+	}
+}
+
+// warnDeprecatedAlias prints a deprecation notice to stderr when a renamed
+// command is invoked via a deprecated alias. It inspects the first non-flag
+// argument (the subcommand name) so the warning fires for every subcommand
+// (e.g. "dev wkt rm"), not just the bare alias.
+func warnDeprecatedAlias(args []string, stderr io.Writer) {
+	for _, a := range args {
+		if strings.HasPrefix(a, "-") {
+			continue
+		}
+		if a == "wkt" {
+			fmt.Fprintln(stderr, `dev: "wkt" is deprecated, use "wt" instead`)
+		}
+		return // first non-flag arg is the subcommand; stop either way
 	}
 }
 
