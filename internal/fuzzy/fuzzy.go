@@ -8,6 +8,7 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/muesli/termenv"
 	fuzzymatch "github.com/sahilm/fuzzy"
 )
 
@@ -15,6 +16,12 @@ const maxVisible = 10
 
 // Renderer tied to stderr so colors work when stdout is captured by the shell wrapper.
 var renderer = lipgloss.NewRenderer(os.Stderr)
+
+// DisableColor removes ANSI color codes from fuzzy finder output.
+// Call this when NO_COLOR is set or --no-color is passed.
+func DisableColor() {
+	renderer.SetColorProfile(termenv.Ascii)
+}
 
 var (
 	selectedStyle = renderer.NewStyle().Foreground(lipgloss.Color("212")).Bold(true)

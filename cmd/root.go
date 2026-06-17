@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/dsaiztc/dev/internal/fuzzy"
 	"github.com/dsaiztc/dev/internal/plugin"
 	"github.com/spf13/cobra"
 )
@@ -16,6 +17,13 @@ var rootCmd = &cobra.Command{
 	Use:   "dev",
 	Short: "A CLI tool for managing development projects",
 	Long:  `dev reduces cognitive load when navigating between development projects by enforcing an opinionated directory structure (~/src/<source>/<org>/<project>).`,
+	PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
+		noColor, _ := cmd.Root().PersistentFlags().GetBool("no-color")
+		if noColor || os.Getenv("NO_COLOR") != "" {
+			fuzzy.DisableColor()
+		}
+		return nil
+	},
 }
 
 const pluginGroupID = "plugins"
@@ -27,6 +35,7 @@ func SetVersion(v string) {
 
 func init() {
 	rootCmd.PersistentFlags().Bool("no-input", false, "disable all interactive prompts (for use in scripts/agents)")
+	rootCmd.PersistentFlags().Bool("no-color", false, "disable ANSI color output (also honored via NO_COLOR env var)")
 }
 
 // noInput returns true when --no-input was passed or when /dev/tty is unavailable.
