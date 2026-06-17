@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -332,6 +333,35 @@ func TestPrintTree_ComplexHierarchy(t *testing.T) {
 
 	if source1Line >= source2Line {
 		t.Error("expected source1.com to appear before source2.com")
+	}
+}
+
+func TestTreeJSON(t *testing.T) {
+	repoPaths := []string{
+		"github.com/foo/bar",
+		"gitlab.com/team/svc",
+	}
+
+	old := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
+	if err := json.NewEncoder(os.Stdout).Encode(repoPaths); err != nil {
+		t.Fatalf("encode: %v", err)
+	}
+
+	w.Close()
+	os.Stdout = old
+
+	var buf bytes.Buffer
+	io.Copy(&buf, r)
+
+	var got []string
+	if err := json.Unmarshal(buf.Bytes(), &got); err != nil {
+		t.Fatalf("json.Unmarshal: %v (raw=%q)", err, buf.String())
+	}
+	if len(got) != 2 || got[0] != "github.com/foo/bar" || got[1] != "gitlab.com/team/svc" {
+		t.Errorf("got %v, want %v", got, repoPaths)
 	}
 }
 

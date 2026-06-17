@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -75,9 +76,6 @@ func TestLocCmd_WithQuery(t *testing.T) {
 }
 
 func TestLocCmd_OutputGoesToStdout(t *testing.T) {
-	// Verify that output goes to stdout (not stderr)
-	// This is important for composability with other commands
-
 	testOutput := "/Users/test/src/github.com/test/repo"
 
 	oldStdout := os.Stdout
@@ -95,5 +93,56 @@ func TestLocCmd_OutputGoesToStdout(t *testing.T) {
 
 	if output != testOutput {
 		t.Errorf("expected output %q, got %q", testOutput, output)
+	}
+}
+
+func TestLocOutput_Plain(t *testing.T) {
+	// Redirect stdout
+	old := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
+	err := locOutput("github.com/foo/bar", "/home/user/src/github.com/foo/bar", false)
+
+	w.Close()
+	os.Stdout = old
+	if err != nil {
+		t.Fatalf("locOutput: %v", err)
+	}
+	var buf bytes.Buffer
+	io.Copy(&buf, r)
+	want := "/home/user/src/github.com/foo/bar\n"
+	if buf.String() != want {
+		t.Errorf("plain output = %q, want %q", buf.String(), want)
+	}
+}
+
+func TestLocOutput_JSON(t *testing.T) {
+	old := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
+	err := locOutput("github.com/foo/bar", "/home/user/src/github.com/foo/bar", true)
+
+	w.Close()
+	os.Stdout = old
+	if err != nil {
+		t.Fatalf("locOutput: %v", err)
+	}
+	var buf bytes.Buffer
+	io.Copy(&buf, r)
+
+	var got struct {
+		Repo string `json:"repo"`
+		Path string `json:"path"`
+	}
+	if err := json.Unmarshal(buf.Bytes(), &got); err != nil {
+		t.Fatalf("json.Unmarshal: %v (raw=%q)", err, buf.String())
+	}
+	if got.Repo != "github.com/foo/bar" {
+		t.Errorf("repo = %q, want %q", got.Repo, "github.com/foo/bar")
+	}
+	if got.Path != "/home/user/src/github.com/foo/bar" {
+		t.Errorf("path = %q, want %q", got.Path, "/home/user/src/github.com/foo/bar")
 	}
 }

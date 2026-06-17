@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -19,36 +20,37 @@ var treeCmd = &cobra.Command{
 }
 
 func init() {
+	treeCmd.Flags().Bool("json", false, "output as JSON array of repo paths")
 	rootCmd.AddCommand(treeCmd)
 }
 
 func runTree(cmd *cobra.Command, args []string) error {
-	// 1. Get home directory
+	asJSON, _ := cmd.Flags().GetBool("json")
+
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		return fmt.Errorf("could not determine home directory: %w", err)
 	}
 
-	// 2. Build base path
 	baseDir := filepath.Join(homeDir, "src")
 
-	// 3. Discover repos
 	allRepos, err := repos.Discover(baseDir)
 	if err != nil {
 		return fmt.Errorf("could not discover repos: %w", err)
 	}
 
-	// 4. Handle empty case
 	if len(allRepos) == 0 {
 		fmt.Fprintf(os.Stderr, "no repos found under %s\n", baseDir)
 		return nil
 	}
 
-	// 5. Build and render tree
+	if asJSON {
+		return json.NewEncoder(os.Stdout).Encode(allRepos)
+	}
+
 	root := buildTree(allRepos)
 	fmt.Printf("~/src/\n")
 	printTree(root, "", false)
-
 	return nil
 }
 

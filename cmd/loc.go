@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -19,10 +20,13 @@ var locCmd = &cobra.Command{
 }
 
 func init() {
+	locCmd.Flags().Bool("json", false, "output result as JSON ({\"repo\":\"...\",\"path\":\"...\"})")
 	rootCmd.AddCommand(locCmd)
 }
 
 func runLoc(cmd *cobra.Command, args []string) error {
+	asJSON, _ := cmd.Flags().GetBool("json")
+
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		return fmt.Errorf("could not determine home directory: %w", err)
@@ -42,16 +46,14 @@ func runLoc(cmd *cobra.Command, args []string) error {
 	var selected string
 
 	if len(args) == 0 {
-		// Interactive fuzzy finder
 		selected, err = fuzzy.Run(allRepos)
 		if err != nil {
 			return err
 		}
 		if selected == "" {
-			return nil // User cancelled
+			return nil
 		}
 	} else {
-		// Fuzzy match with query
 		query := strings.Join(args, " ")
 		matches := repos.FuzzyMatch(allRepos, query)
 		if len(matches) == 0 {
@@ -61,6 +63,16 @@ func runLoc(cmd *cobra.Command, args []string) error {
 	}
 
 	fullPath := filepath.Join(baseDir, selected)
-	fmt.Println(fullPath)
+	return locOutput(selected, fullPath, asJSON)
+}
+
+func locOutput(repo, path string, asJSON bool) error {
+	if asJSON {
+		return json.NewEncoder(os.Stdout).Encode(struct {
+			Repo string `json:"repo"`
+			Path string `json:"path"`
+		}{Repo: repo, Path: path})
+	}
+	fmt.Println(path)
 	return nil
 }
